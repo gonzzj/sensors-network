@@ -27,6 +27,7 @@ export const StableZones: FC<StableZonesProps> = ({ data, threshold }) => {
             fontFamily: 'monospace',
             whiteSpace: 'pre-wrap',
             overflowX: 'auto',
+            maxHeight: '480px',
           }}
         >
           {JSON.stringify(findStableZones(sensorGrid.data, threshold), null, 2)}
