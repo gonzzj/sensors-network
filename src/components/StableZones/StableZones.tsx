@@ -11,7 +11,7 @@ interface StableZonesProps {
 }
 
 export const StableZones: FC<StableZonesProps> = ({ data, threshold }) => {
-  const sensorGrid = parseSensorsGrid(data, threshold)
+  const sensorGrid = parseSensorsGrid(data.replace(/'/g, '"'), threshold)
 
   return (
     <>

@@ -18,15 +18,13 @@ export const findStableZones = (
     [0, 1], // right
   ]
 
-  const searchZoneByBFS = (
-    startRow: number,
-    startCol: number,
-    node: number
-  ) => {
+  const searchZoneByBFS = (startRow: number, startCol: number) => {
     const queue = [[startRow, startCol]]
     visited[startRow][startCol] = true
 
-    const zone = [node]
+    const node = grid[startRow][startCol] as number
+    let size = 1
+    let sumTemp = node
     let min = node
     let max = node
 
@@ -38,10 +36,7 @@ export const findStableZones = (
         const neighborCol = col + directionCol
 
         if (
-          neighborRow >= 0 &&
-          neighborRow < rows &&
-          neighborCol >= 0 &&
-          neighborCol < cols &&
+          isInBounds(rows, cols, neighborRow, neighborCol) &&
           !visited[neighborRow][neighborCol] &&
           grid[neighborRow][neighborCol] !== DOWN_SENSOR_NODE
         ) {
@@ -52,16 +47,14 @@ export const findStableZones = (
           if (max - min <= threshold) {
             visited[neighborRow][neighborCol] = true
             queue.push([neighborRow, neighborCol])
-            zone.push(neighborNode)
+            sumTemp += neighborNode
+            size++
           }
         }
       }
     }
 
-    const size = zone.length
-    const avg_temp = (
-      zone.reduce((acc, currentValue) => acc + currentValue, 0) / size
-    ).toFixed(2)
+    const avg_temp = (sumTemp / size).toFixed(2)
 
     return { size, avg_temp }
   }
@@ -69,7 +62,7 @@ export const findStableZones = (
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (!visited[r][c] && grid[r][c] !== DOWN_SENSOR_NODE) {
-        const zoneData = searchZoneByBFS(r, c, grid[r][c] as number)
+        const zoneData = searchZoneByBFS(r, c)
 
         if (zoneData.size > 1) {
           results.push(zoneData)
@@ -80,3 +73,14 @@ export const findStableZones = (
 
   return results
 }
+
+const isInBounds = (
+  rows: number,
+  cols: number,
+  neighborRow: number,
+  neighborCol: number
+) =>
+  neighborRow >= 0 &&
+  neighborRow < rows &&
+  neighborCol >= 0 &&
+  neighborCol < cols
